@@ -40,6 +40,26 @@ export class UserController {
     return this.userService.getProfile(username);
   }
 
+  @Post('follow/:username')
+  @ApiOperation({ summary: 'Follow a user' })
+  @ApiResponse({ status: 201, description: 'Successfully followed user' })
+  async followUser(
+    @Request() req: { user: { sub: string } },
+    @Param('username') username: string,
+  ): Promise<void> {
+    await this.userService.followUser(req.user.sub, username);
+  }
+
+  @Delete('unfollow/:username')
+  @ApiOperation({ summary: 'Unfollow a user' })
+  @ApiResponse({ status: 200, description: 'Successfully unfollowed user' })
+  async unfollowUser(
+    @Request() req: { user: { sub: string } },
+    @Param('username') username: string,
+  ): Promise<void> {
+    await this.userService.unfollowUser(req.user.sub, username);
+  }
+
   @Put('profile')
   @ApiOperation({ summary: 'Update user profile' })
   @ApiResponse({
