@@ -7,6 +7,7 @@ export class SearchQueryDto {
   @IsOptional()
   username?: string;
 
+  // Add  searches by hashtag
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
