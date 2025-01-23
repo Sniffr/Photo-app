@@ -4,6 +4,7 @@ import { FeedController } from './feed.controller';
 import { FeedService } from '../services/feed.service';
 import { FeedQueryDto } from '../dtos/feed-query.dto';
 import '@jest/globals';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 describe('FeedController', () => {
   let controller: FeedController;
@@ -39,6 +40,15 @@ describe('FeedController', () => {
       },
     }),
   };
+  const mockRequest = {
+    user: {
+      id: '1',
+      username: 'testuser',
+      email: 'test@example.com',
+    },
+    headers: {},
+    body: {},
+  } as RequestWithUser;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -63,15 +73,16 @@ describe('FeedController', () => {
   });
 
   describe('getFeed', () => {
-    const mockRequest: { user: { sub: string } } = {
-      user: { sub: '1' },
-    };
-
     it('should throw BadRequestException when user data is invalid', async () => {
-      const invalidRequest = { user: { sub: '' } };
-      await expect(
-        controller.getFeed(invalidRequest as { user: { sub: string } }, {}),
-      ).rejects.toThrow(BadRequestException);
+      const invalidRequest = {
+        user: { id: '' },
+        headers: {},
+        body: {},
+      } as RequestWithUser;
+
+      await expect(controller.getFeed(invalidRequest, {})).rejects.toThrow(
+        BadRequestException,
+      );
     });
 
     const mockQuery: FeedQueryDto = {
@@ -112,12 +123,9 @@ describe('FeedController', () => {
     });
 
     it('should handle invalid user in request', async () => {
-      const invalidRequest = { user: {} };
+      const invalidRequest = { user: {} } as RequestWithUser;
       await expect(
-        controller.getFeed(
-          invalidRequest as { user: { sub: string } },
-          mockQuery,
-        ),
+        controller.getFeed(invalidRequest, mockQuery),
       ).rejects.toThrow();
     });
 

@@ -5,6 +5,7 @@ import { CreateLikeDto } from '../dtos/create-like.dto';
 import { Like } from '../../domain/entities/like.entity';
 import { User } from '../../domain/entities/user.entity';
 import { Photo } from '../../domain/entities/photo.entity';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 // Removed unused import LikeResponseDto
 
 describe('LikeController', () => {
@@ -82,9 +83,15 @@ describe('LikeController', () => {
       photoId: '1',
     };
 
-    const mockRequest: { user: { sub: string } } = {
-      user: { sub: mockUser.id },
-    };
+    const mockRequest = {
+      user: {
+        id: mockUser.id,
+        username: mockUser.username,
+        email: mockUser.email,
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should create a like successfully', async (): Promise<void> => {
       const createSpy = jest.spyOn(likeService, 'create');
@@ -110,9 +117,15 @@ describe('LikeController', () => {
   });
 
   describe('remove', () => {
-    const mockRequest: { user: { sub: string } } = {
-      user: { sub: mockUser.id },
-    };
+    const mockRequest = {
+      user: {
+        id: mockUser.id,
+        username: mockUser.username,
+        email: mockUser.email,
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should remove a like successfully', async (): Promise<void> => {
       const removeSpy = jest.spyOn(likeService, 'remove');
