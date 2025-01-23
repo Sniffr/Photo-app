@@ -32,7 +32,7 @@ describe('CommentController', () => {
     username: mockUser.username,
     email: mockUser.email,
     password: 'hashed',
-    bio: null,
+    bio: '', // Empty string since TypeScript is not properly handling nullable bio
     created_at: new Date(),
     updated_at: new Date(),
   };
