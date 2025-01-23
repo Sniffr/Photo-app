@@ -17,6 +17,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDto } from '../dtos/create-comment.dto';
 import { CommentResponseDto } from '../dtos/comment-response.dto';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 @ApiTags('comments')
 @Controller('comments')
@@ -33,11 +34,11 @@ export class CommentController {
     type: CommentResponseDto,
   })
   async create(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Param('photoId') photoId: string,
     @Body() createCommentDto: CreateCommentDto,
   ) {
-    return this.commentService.create(req.user.sub, photoId, createCommentDto);
+    return this.commentService.create(req.user.id, photoId, createCommentDto);
   }
 
   @Get('photo/:photoId')

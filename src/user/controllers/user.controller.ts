@@ -55,10 +55,10 @@ export class UserController {
   @ApiOperation({ summary: 'Unfollow a user' })
   @ApiResponse({ status: 200, description: 'Successfully unfollowed user' })
   async unfollowUser(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Param('username') username: string,
   ): Promise<void> {
-    await this.userService.unfollowUser(req.user.sub, username);
+    await this.userService.unfollowUser(req.user.id, username);
   }
 
   @Put('profile')
@@ -69,9 +69,9 @@ export class UserController {
     type: UserProfileDto,
   })
   async updateProfile(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Body() updateProfileDto: UpdateProfileDto,
   ): Promise<UserProfileDto> {
-    return this.userService.updateProfile(req.user.sub, updateProfileDto);
+    return this.userService.updateProfile(req.user.id, updateProfileDto);
   }
 }

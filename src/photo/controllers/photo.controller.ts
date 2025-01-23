@@ -23,6 +23,7 @@ import { PhotoService } from '../services/photo.service';
 import { CreatePhotoDto } from '../dtos/create-photo.dto';
 import { PhotoResponseDto } from '../dtos/photo-response.dto';
 import { User } from '../../domain/entities/user.entity';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 @ApiTags('photos')
 @Controller('photos')
@@ -41,12 +42,12 @@ export class PhotoController {
   @ApiConsumes('multipart/form-data')
   @UseInterceptors(FileInterceptor('file'))
   async create(
-    @Request() req: { user: { sub: string; email: string; username: string } },
+    @Request() req: RequestWithUser,
     @Body() createPhotoDto: CreatePhotoDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
     const user = {
-      id: req.user.sub,
+      id: req.user.id,
       email: req.user.email,
       username: req.user.username,
     } as User;
@@ -60,17 +61,14 @@ export class PhotoController {
     description: 'List of photos',
     type: [PhotoResponseDto],
   })
-  async findAll(@Request() req: { user: { sub: string } }) {
-    return this.photoService.findAllByUser(req.user.sub);
+  async findAll(@Request() req: RequestWithUser) {
+    return this.photoService.findAllByUser(req.user.id);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a photo' })
   @ApiResponse({ status: 200, description: 'Photo deleted successfully' })
-  async remove(
-    @Request() req: { user: { sub: string } },
-    @Param('id') id: string,
-  ) {
-    return this.photoService.remove(req.user.sub, id);
+  async remove(@Request() req: RequestWithUser, @Param('id') id: string) {
+    return this.photoService.remove(req.user.id, id);
   }
 }
