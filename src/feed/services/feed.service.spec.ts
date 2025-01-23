@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, ObjectLiteral } from 'typeorm';
 import { FeedService } from './feed.service';
 import { Photo } from '../../domain/entities/photo.entity';
 import { Follow } from '../../domain/entities/follow.entity';
@@ -14,10 +14,14 @@ describe('FeedService', () => {
 
   // Define mock repository type
   type MockType<T> = {
-    [P in keyof T]?: jest.Mock;
+    [P in keyof T]: P extends 'metadata' | 'manager' ? T[P] : jest.Mock;
   };
 
-  type MockRepository<T> = MockType<Repository<T>>;
+  type MockRepository<T extends ObjectLiteral> = {
+    [P in keyof Repository<T>]: P extends 'metadata' | 'manager' 
+      ? Repository<T>[P]
+      : jest.Mock;
+  };
 
   const mockUser = {
     id: '1',
@@ -36,17 +40,81 @@ describe('FeedService', () => {
     user: mockUser,
   };
 
-  const mockPhotoRepository: MockRepository<Photo> = {
+  const mockPhotoRepository = {
     find: jest.fn(),
     findAndCount: jest.fn().mockResolvedValue([[mockPhoto], 1]),
-  };
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+    count: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    preload: jest.fn(),
+    merge: jest.fn(),
+    softDelete: jest.fn(),
+    recover: jest.fn(),
+    createQueryBuilder: jest.fn(),
+    query: jest.fn(),
+    clear: jest.fn(),
+    increment: jest.fn(),
+    decrement: jest.fn(),
+    exist: jest.fn(),
+    metadata: {},
+    manager: {} as any,
+    hasId: jest.fn(),
+    getId: jest.fn(),
+    target: Photo,
+    upsert: jest.fn(),
+    insert: jest.fn(),
+    extend: jest.fn(),
+    release: jest.fn(),
+    findOneBy: jest.fn(),
+    findOneById: jest.fn(),
+    findByIds: jest.fn(),
+    findAndCountBy: jest.fn(),
+    countBy: jest.fn(),
+    findBy: jest.fn()
+  } as unknown as MockRepository<Photo>;
 
-  const mockFollowRepository: MockRepository<Follow> = {
+  const mockFollowRepository = {
     find: jest.fn().mockResolvedValue([
       { follower_id: '1', following_id: '2' },
       { follower_id: '1', following_id: '3' },
     ]),
-  };
+    create: jest.fn(),
+    save: jest.fn(),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+    count: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    preload: jest.fn(),
+    merge: jest.fn(),
+    softDelete: jest.fn(),
+    recover: jest.fn(),
+    createQueryBuilder: jest.fn(),
+    query: jest.fn(),
+    clear: jest.fn(),
+    increment: jest.fn(),
+    decrement: jest.fn(),
+    exist: jest.fn(),
+    metadata: {},
+    manager: {} as any,
+    hasId: jest.fn(),
+    getId: jest.fn(),
+    target: Follow,
+    upsert: jest.fn(),
+    insert: jest.fn(),
+    extend: jest.fn(),
+    release: jest.fn(),
+    findOneBy: jest.fn(),
+    findOneById: jest.fn(),
+    findByIds: jest.fn(),
+    findAndCountBy: jest.fn(),
+    countBy: jest.fn(),
+    findBy: jest.fn()
+  } as unknown as MockRepository<Follow>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({

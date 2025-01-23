@@ -81,9 +81,9 @@ describe('JwtStrategy', () => {
 
     strategy = module.get<JwtStrategy>(JwtStrategy);
     userRepository = module.get(getRepositoryToken(User));
-    
+
     // Ensure JWT_SECRET is available for the strategy
-    (mockConfigService.get as jest.Mock).mockReturnValue('test-jwt-secret');
+    mockConfigService.get.mockReturnValue('test-jwt-secret');
     // ConfigService is mocked, no need to get from module
 
     // Clear all mocks before each test
@@ -128,7 +128,7 @@ describe('JwtStrategy', () => {
     });
 
     it('should throw UnauthorizedException when payload is invalid', async (): Promise<void> => {
-      const invalidPayload = { sub: null, email: null, username: null };
+      const invalidPayload = { sub: '', email: '', username: '' };
       await expect(strategy.validate(invalidPayload)).rejects.toThrow(
         UnauthorizedException,
       );
@@ -155,7 +155,10 @@ describe('JwtStrategy', () => {
 
       // Create a new instance to verify constructor behavior
       const getSpy = jest.spyOn(mockConfigService, 'get');
-      const strategy = new JwtStrategy(mockConfigService as unknown as ConfigService, mockUserRepository);
+      const strategy = new JwtStrategy(
+        mockConfigService as unknown as ConfigService,
+        mockUserRepository,
+      );
 
       expect(getSpy).toHaveBeenCalledWith('JWT_SECRET');
       expect(getSpy).toHaveReturnedWith('test-jwt-secret');

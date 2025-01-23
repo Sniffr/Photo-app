@@ -5,16 +5,20 @@ import { PhotoService } from './photo.service';
 import { StorageService } from './storage.service';
 import { Photo } from '../../domain/entities/photo.entity';
 import { User } from '../../domain/entities/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, ObjectLiteral } from 'typeorm';
 import { CreatePhotoDto } from '../dtos/create-photo.dto';
 import * as sharp from 'sharp';
 
 // Define mock repository type that combines Repository and Jest mock methods
 type MockType<T> = {
-  [P in keyof T]?: jest.Mock;
+  [P in keyof T]: P extends 'metadata' | 'manager' ? T[P] : jest.Mock;
 };
 
-type MockRepository<T> = MockType<Repository<T>>;
+type MockRepository<T extends ObjectLiteral> = {
+  [P in keyof Repository<T>]: P extends 'metadata' | 'manager' 
+    ? Repository<T>[P]
+    : jest.Mock;
+};
 
 // Mock sharp
 jest.mock('sharp', () => {
@@ -53,7 +57,7 @@ describe('PhotoService', () => {
     },
   };
 
-  const mockPhotoRepository: MockRepository<Photo> = {
+  const mockPhotoRepository = {
     create: jest.fn().mockImplementation(
       (dto: Partial<Photo>): Photo =>
         ({
@@ -83,15 +87,77 @@ describe('PhotoService', () => {
       .mockImplementation(
         (photo: Photo): Promise<Photo> => Promise.resolve(photo),
       ),
-  };
+    update: jest.fn(),
+    findAndCount: jest.fn(),
+    delete: jest.fn(),
+    preload: jest.fn(),
+    merge: jest.fn(),
+    softDelete: jest.fn(),
+    recover: jest.fn(),
+    createQueryBuilder: jest.fn(),
+    count: jest.fn(),
+    query: jest.fn(),
+    clear: jest.fn(),
+    increment: jest.fn(),
+    decrement: jest.fn(),
+    exist: jest.fn(),
+    metadata: {},
+    manager: {} as any,
+    hasId: jest.fn(),
+    getId: jest.fn(),
+    target: jest.fn().mockReturnValue(Photo),
+    upsert: jest.fn(),
+    insert: jest.fn(),
+    extend: jest.fn(),
+    release: jest.fn(),
+    findOneBy: jest.fn(),
+    findOneById: jest.fn(),
+    findByIds: jest.fn(),
+    findAndCountBy: jest.fn(),
+    countBy: jest.fn(),
+    findBy: jest.fn(),
+  } as unknown as MockRepository<Photo>;
 
-  const mockUserRepository: MockRepository<User> = {
+  const mockUserRepository = {
     findOne: jest
       .fn()
       .mockImplementation((): Promise<User> => Promise.resolve(mockUser)),
-  };
+    create: jest.fn(),
+    save: jest.fn(),
+    update: jest.fn(),
+    find: jest.fn(),
+    remove: jest.fn(),
+    findAndCount: jest.fn(),
+    delete: jest.fn(),
+    preload: jest.fn(),
+    merge: jest.fn(),
+    softDelete: jest.fn(),
+    recover: jest.fn(),
+    createQueryBuilder: jest.fn(),
+    count: jest.fn(),
+    query: jest.fn(),
+    clear: jest.fn(),
+    increment: jest.fn(),
+    decrement: jest.fn(),
+    exist: jest.fn(),
+    metadata: {},
+    manager: {} as any,
+    hasId: jest.fn(),
+    getId: jest.fn(),
+    target: jest.fn().mockReturnValue(User),
+    upsert: jest.fn(),
+    insert: jest.fn(),
+    extend: jest.fn(),
+    release: jest.fn(),
+    findOneBy: jest.fn(),
+    findOneById: jest.fn(),
+    findByIds: jest.fn(),
+    findAndCountBy: jest.fn(),
+    countBy: jest.fn(),
+    findBy: jest.fn(),
+  } as unknown as MockRepository<User>;
 
-  const mockStorageService: MockType<StorageService> = {
+  const mockStorageService = {
     uploadFile: jest
       .fn()
       .mockImplementation(
@@ -100,7 +166,20 @@ describe('PhotoService', () => {
     deleteFile: jest
       .fn()
       .mockImplementation((): Promise<void> => Promise.resolve()),
-  };
+    hasId: jest.fn(),
+    getId: jest.fn(),
+    target: jest.fn().mockReturnValue(StorageService),
+    upsert: jest.fn(),
+    insert: jest.fn(),
+    extend: jest.fn(),
+    release: jest.fn(),
+    findOneBy: jest.fn(),
+    findOneById: jest.fn(),
+    findByIds: jest.fn(),
+    findAndCountBy: jest.fn(),
+    countBy: jest.fn(),
+    findBy: jest.fn(),
+  } as unknown as MockType<StorageService>;
 
   const mockFile: Express.Multer.File = {
     fieldname: 'photo',
@@ -243,7 +322,7 @@ describe('PhotoService', () => {
 
     it('should throw BadRequestException when no file is provided', async (): Promise<void> => {
       await expect(
-        service.create(mockUser, createPhotoDto, null),
+        service.create(mockUser, createPhotoDto, undefined as unknown as Express.Multer.File),
       ).rejects.toThrow(BadRequestException);
     });
   });
