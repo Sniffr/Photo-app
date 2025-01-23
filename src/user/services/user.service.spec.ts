@@ -1,21 +1,111 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { Repository, ObjectLiteral } from 'typeorm';
+import {
+  Repository,
+  EntityMetadata,
+  ObjectLiteral,
+  EntityTarget,
+} from 'typeorm';
 import { UserService } from './user.service';
 import { User } from '../../domain/entities/user.entity';
 import { Follow } from '../../domain/entities/follow.entity';
 import { Photo } from '../../domain/entities/photo.entity';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
 
-type MockType<T> = {
-  [P in keyof T]: P extends 'metadata' | 'manager' ? T[P] : jest.Mock;
-};
+const createEntityMetadata = (
+  entity: new (...args: unknown[]) => User | Follow | Photo,
+): EntityMetadata =>
+  ({
+    '@instanceof': Symbol.for('EntityMetadata'),
+    connection: {} as Repository<User | Follow | Photo>['manager'],
+    subscribers: [],
+    target: entity,
+    tableMetadataArgs: {} as EntityMetadata['tableMetadataArgs'],
+    table: undefined,
+    columns: [],
+    relations: [],
+    relationIds: [],
+    relationCounts: [],
+    indices: [],
+    uniques: [],
+    checks: [],
+    exclusions: [],
+    embeddeds: [],
+    foreignKeys: [],
+    propertiesMap: {},
+    closureJunctionTable: {} as EntityMetadata['closureJunctionTable'],
+    name: entity.name.toLowerCase(),
+    tableName: entity.name.toLowerCase(),
+    tablePath: entity.name.toLowerCase(),
+    schemaPath: 'public',
+    orderBy: {},
+    discriminatorValue: entity.name.toLowerCase(),
+    childEntityMetadatas: [],
+    ownColumns: [],
+    ownRelations: [],
+    ownIndices: [],
+    ownUniques: [],
+    ownChecks: [],
+    ownExclusions: [],
+    isClosure: false,
+    isJunction: false,
+    isAlwaysUsingConstructor: true,
+    isJunctionEntityMetadata: false,
+    isClosureJunctionEntityMetadata: false,
+    tableType: 'regular',
+    expression: undefined,
+    dependsOn: {},
+    relationWithParentMetadata: undefined,
+    relationMetadatas: [],
+    inheritanceTree: [],
+    inheritancePattern: undefined,
+    treeType: undefined,
+    treeOptions: undefined,
+    targetName: entity.name,
+    givenTableName: entity.name.toLowerCase(),
+    fileType: 'entity',
+    engine: undefined,
+    database: undefined,
+    schema: undefined,
+    synchronize: true,
+    withoutRowid: false,
+    createDateColumn: undefined,
+    updateDateColumn: undefined,
+    deleteDateColumn: undefined,
+    versionColumn: undefined,
+    discriminatorColumn: undefined,
+    treeLevelColumn: undefined,
+    nestedSetLeftColumn: undefined,
+    nestedSetRightColumn: undefined,
+    materializedPathColumn: undefined,
+    objectIdColumn: undefined,
+    parentClosureEntityMetadata: undefined,
+    parentEntityMetadata: undefined,
+    tableNameWithoutPrefix: entity.name.toLowerCase(),
+  }) as unknown as EntityMetadata;
 
+// Type for repository methods
 type MockRepository<T extends ObjectLiteral> = {
-  [P in keyof Repository<T>]: P extends 'metadata' | 'manager' 
-    ? Repository<T>[P]
-    : jest.Mock;
+  [P in keyof Repository<T>]: P extends 'metadata'
+    ? EntityMetadata
+    : P extends 'manager'
+      ? Repository<T>['manager']
+      : P extends 'target'
+        ? EntityTarget<T>
+        : jest.Mock;
+} & {
+  softRemove: jest.Mock;
+  restore: jest.Mock;
+  exists: jest.Mock;
+  existsBy: jest.Mock;
+  sum: jest.Mock;
+  average: jest.Mock;
+  minimum: jest.Mock;
+  maximum: jest.Mock;
+  findOneOrFail: jest.Mock;
+  findOneByOrFail: jest.Mock;
+  queryRunner?: jest.Mock;
 };
 
 describe('UserService', () => {
@@ -59,8 +149,8 @@ describe('UserService', () => {
       increment: jest.fn(),
       decrement: jest.fn(),
       exist: jest.fn(),
-      metadata: {},
-      manager: {} as any,
+      metadata: createEntityMetadata(User),
+      manager: {} as Repository<User>['manager'],
       hasId: jest.fn(),
       getId: jest.fn(),
       target: jest.fn().mockReturnValue(User),
@@ -95,8 +185,8 @@ describe('UserService', () => {
       increment: jest.fn(),
       decrement: jest.fn(),
       exist: jest.fn(),
-      metadata: {},
-      manager: {} as any,
+      metadata: createEntityMetadata(Follow),
+      manager: {} as Repository<Follow>['manager'],
       hasId: jest.fn(),
       getId: jest.fn(),
       target: jest.fn().mockReturnValue(Follow),
@@ -131,8 +221,8 @@ describe('UserService', () => {
       increment: jest.fn(),
       decrement: jest.fn(),
       exist: jest.fn(),
-      metadata: {},
-      manager: {} as any,
+      metadata: createEntityMetadata(Photo),
+      manager: {} as Repository<Photo>['manager'],
       hasId: jest.fn(),
       getId: jest.fn(),
       target: jest.fn().mockReturnValue(Photo),
@@ -194,15 +284,9 @@ describe('UserService', () => {
   describe('getProfile', () => {
     it('should return user profile with counts when user exists', async () => {
       userRepository.findOne.mockResolvedValueOnce(mockUser);
-      const countFollowersSpy = jest
-        .spyOn(followRepository, 'count')
-        .mockResolvedValueOnce(10);
-      const countFollowingSpy = jest
-        .spyOn(followRepository, 'count')
-        .mockResolvedValueOnce(5);
-      const countPhotosSpy = jest
-        .spyOn(photoRepository, 'count')
-        .mockResolvedValue(20);
+      jest.spyOn(followRepository, 'count').mockResolvedValueOnce(10);
+      jest.spyOn(followRepository, 'count').mockResolvedValueOnce(5);
+      jest.spyOn(photoRepository, 'count').mockResolvedValue(20);
 
       userRepository.findOne.mockResolvedValueOnce(mockUser);
       const result = await service.getProfile('testuser');

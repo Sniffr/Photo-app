@@ -10,10 +10,10 @@ interface MockS3Instance {
   deleteObject: jest.Mock;
 }
 
-const mockS3Instance: MockS3Instance = {
+const mockS3Instance = {
   upload: jest.fn(),
   deleteObject: jest.fn(),
-};
+} as MockS3Instance;
 
 jest.mock('aws-sdk', () => ({
   S3: jest.fn(() => mockS3Instance),
@@ -23,14 +23,14 @@ describe('StorageService', () => {
   let service: StorageService;
 
   const mockConfigService = {
-    get: jest.fn((key: string) => {
-      const config = {
+    get: jest.fn((key: string): string | undefined => {
+      const config: Record<string, string> = {
         AWS_S3_BUCKET: 'test-bucket',
         AWS_REGION: 'us-east-1',
         AWS_ACCESS_KEY_ID: 'test-key',
         AWS_SECRET_ACCESS_KEY: 'test-secret',
       };
-      return config[key] as string;
+      return config[key];
     }),
   };
 
@@ -105,7 +105,7 @@ describe('StorageService', () => {
       });
       expect(mockS3Instance.upload).toHaveBeenCalledWith({
         Bucket: 'test-bucket',
-        Key: expect.any(String),
+        Key: expect.any(String) as string,
         Body: mockFile.buffer,
         ContentType: mockFile.mimetype,
         ACL: 'public-read',
