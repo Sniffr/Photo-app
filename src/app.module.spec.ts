@@ -5,10 +5,11 @@ import {TypeOrmModule} from '@nestjs/typeorm';
 import {DataSource} from 'typeorm';
 import {randomUUID} from 'crypto';
 
-// Mock crypto for tests
 global.crypto = {
     randomUUID,
-}
+    subtle: {} as SubtleCrypto,
+    getRandomValues: () => new Uint8Array(10)
+} as Crypto;
 
 jest.mock('typeorm', () => {
     const actual = jest.requireActual('typeorm');
