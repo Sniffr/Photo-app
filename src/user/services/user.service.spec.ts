@@ -121,9 +121,7 @@ describe('UserService', () => {
 
     it('should throw NotFoundException when user does not exist', async (): Promise<void> => {
       // Override the default mock implementation for this test
-      userRepository.findOne.mockImplementationOnce(() =>
-        Promise.resolve(null),
-      );
+      userRepository.findOne.mockImplementationOnce(() => Promise.resolve(null));
 
       await expect(service.getProfile('nonexistent')).rejects.toThrow(
         NotFoundException,
@@ -133,13 +131,9 @@ describe('UserService', () => {
     it('should handle database error during profile fetch', async (): Promise<void> => {
       const dbError = new Error('Database error');
       // Override the default mock implementation for this test
-      userRepository.findOne.mockImplementationOnce(() =>
-        Promise.reject(dbError),
-      );
+      userRepository.findOne.mockImplementationOnce(() => Promise.reject(dbError));
 
-      await expect(service.getProfile('testuser')).rejects.toThrow(
-        dbError.message,
-      );
+      await expect(service.getProfile('testuser')).rejects.toThrow(dbError.message);
     });
   });
 
