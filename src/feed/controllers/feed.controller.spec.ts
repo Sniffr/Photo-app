@@ -68,7 +68,7 @@ describe('FeedController', () => {
     };
 
     it('should throw BadRequestException when user data is invalid', async () => {
-      const invalidRequest = { user: null };
+      const invalidRequest = { user: { sub: '' } };
       await expect(
         controller.getFeed(invalidRequest as { user: { sub: string } }, {}),
       ).rejects.toThrow(BadRequestException);

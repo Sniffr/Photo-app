@@ -206,7 +206,9 @@ Required secrets for the pipeline:
 The API documentation is available in two formats:
 
 1. Swagger UI: Available at `/api` when running the application
-2. Postman Collection: Located in the `postman` directory
+2. A live version of the swagger si available at http://209.97.132.232/api 
+3. Postman Collection: Located in the `postman` directory
+4. This is also available through  the link https://jungopharm.postman.co/workspace/Interview~52eb37c8-2d2a-449d-9001-85400a5429fd/collection/9293037-942e0f74-a193-47dc-86ee-2a05d6ca1e49?action=share&creator=9293037&active-environment=9293037-7c025d09-e41b-42f0-ac47-9c529c3bb43b
 
 ## License
 
