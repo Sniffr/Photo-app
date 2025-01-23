@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UserService } from '../services/user.service';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
 import { UserProfileDto } from '../dtos/user-profile.dto';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 @ApiTags('users')
 @Controller('users')
@@ -44,10 +45,10 @@ export class UserController {
   @ApiOperation({ summary: 'Follow a user' })
   @ApiResponse({ status: 201, description: 'Successfully followed user' })
   async followUser(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Param('username') username: string,
   ): Promise<void> {
-    await this.userService.followUser(req.user.sub, username);
+    await this.userService.followUser(req.user.id, username);
   }
 
   @Delete('unfollow/:username')
