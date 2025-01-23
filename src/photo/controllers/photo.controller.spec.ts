@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PhotoController } from './photo.controller';
 import { PhotoService } from '../services/photo.service';
 import { CreatePhotoDto } from '../dtos/create-photo.dto';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 describe('PhotoController', () => {
   let controller: PhotoController;
@@ -72,11 +73,13 @@ describe('PhotoController', () => {
 
     const mockRequest = {
       user: {
-        sub: mockUser.id,
-        email: mockUser.email,
+        id: mockUser.id,
         username: mockUser.username,
+        email: mockUser.email,
       },
-    };
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should create photo successfully', async () => {
       const result = await controller.create(
@@ -109,8 +112,14 @@ describe('PhotoController', () => {
 
   describe('findAll', () => {
     const mockRequest = {
-      user: { sub: mockUser.id },
-    };
+      user: {
+        id: mockUser.id,
+        username: mockUser.username,
+        email: mockUser.email,
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should return all photos for user', async () => {
       const result = await controller.findAll(mockRequest);
@@ -141,8 +150,14 @@ describe('PhotoController', () => {
 
   describe('remove', () => {
     const mockRequest = {
-      user: { sub: mockUser.id },
-    };
+      user: {
+        id: mockUser.id,
+        username: mockUser.username,
+        email: mockUser.email,
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should remove photo successfully', async () => {
       await controller.remove(mockRequest, mockPhoto.id);

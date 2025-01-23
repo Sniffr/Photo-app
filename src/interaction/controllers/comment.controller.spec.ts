@@ -7,6 +7,7 @@ import { Comment } from '../../domain/entities/comment.entity';
 import { Photo } from '../../domain/entities/photo.entity';
 import { User } from '../../domain/entities/user.entity';
 import '@jest/globals';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 describe('CommentController', () => {
   let controller: CommentController;
@@ -24,8 +25,14 @@ describe('CommentController', () => {
   };
 
   const mockRequest = {
-    user: { sub: mockUser.sub },
-  };
+    user: {
+      id: mockUser.sub,
+      username: mockUser.username,
+      email: mockUser.email,
+    },
+    headers: {},
+    body: {},
+  } as RequestWithUser;
 
   const mockUserEntity: User = {
     id: mockUser.sub,
@@ -191,7 +198,11 @@ describe('CommentController', () => {
     });
 
     it('should handle missing user in request', async () => {
-      const invalidRequest = { user: { sub: '' } };
+      const invalidRequest = {
+        user: { id: '' },
+        headers: {},
+        body: {},
+      } as RequestWithUser;
       mockCommentService.create.mockRejectedValueOnce(
         new Error('Invalid user ID'),
       );
@@ -393,14 +404,14 @@ describe('CommentController', () => {
     });
 
     it('should handle invalid request data', async () => {
-      const invalidRequest = { user: {} };
+      const invalidRequest = {
+        user: null, // This should trigger validation
+        headers: {},
+        body: {},
+      } as unknown as RequestWithUser;
 
       await expect(
-        controller.create(
-          invalidRequest as { user: { sub: string } },
-          '1',
-          createCommentDto,
-        ),
+        controller.create(invalidRequest, '1', createCommentDto),
       ).rejects.toThrow();
     });
   });

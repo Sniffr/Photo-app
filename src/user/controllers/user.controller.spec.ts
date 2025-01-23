@@ -3,6 +3,7 @@ import { UserController } from './user.controller';
 import { UserService } from '../services/user.service';
 // Removed unused import UpdateProfileDto
 import { UserProfileDto } from '../dtos/user-profile.dto';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -27,9 +28,11 @@ describe('UserController', () => {
 
   const mockRequest = {
     user: {
-      sub: '1',
+      id: '1',
     },
-  };
+    headers: {},
+    body: {},
+  } as RequestWithUser;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -70,7 +73,7 @@ describe('UserController', () => {
 
       const followUserSpy = jest.spyOn(userService, 'followUser');
       expect(followUserSpy).toHaveBeenCalledWith(
-        mockRequest.user.sub,
+        mockRequest.user.id,
         'usertofollow',
       );
       followUserSpy.mockRestore();
@@ -83,7 +86,7 @@ describe('UserController', () => {
 
       const unfollowUserSpy = jest.spyOn(userService, 'unfollowUser');
       expect(unfollowUserSpy).toHaveBeenCalledWith(
-        mockRequest.user.sub,
+        mockRequest.user.id,
         'userunfollow',
       );
       unfollowUserSpy.mockRestore();
@@ -105,7 +108,7 @@ describe('UserController', () => {
       const updateProfileSpy = jest.spyOn(userService, 'updateProfile');
       expect(result).toBe(mockUserProfile);
       expect(updateProfileSpy).toHaveBeenCalledWith(
-        mockRequest.user.sub,
+        mockRequest.user.id,
         updateProfileDto,
       );
       updateProfileSpy.mockRestore();

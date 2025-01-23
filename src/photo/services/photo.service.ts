@@ -49,7 +49,10 @@ export class PhotoService {
       filename: file.originalname,
       url: uploadResult.url,
       caption: createPhotoDto.caption,
-      hashtags: createPhotoDto.hashtags || [],
+      hashtags:
+        typeof createPhotoDto.hashtags === 'string'
+          ? (JSON.parse(createPhotoDto.hashtags) as string[])
+          : (createPhotoDto.hashtags ?? []),
     });
 
     return this.photoRepository.save(photo);

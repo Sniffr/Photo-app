@@ -30,7 +30,7 @@ export class Photo {
   @Column({ nullable: true })
   caption: string;
 
-  @Column('text', { array: true })
+  @Column('text', { array: true, default: [] })
   hashtags: string[];
 
   @CreateDateColumn()

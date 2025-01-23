@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository, Like, Raw } from 'typeorm';
 import { User } from '../../domain/entities/user.entity';
 import { Photo } from '../../domain/entities/photo.entity';
 import { SearchQueryDto } from '../dtos/search-query.dto';
@@ -35,7 +35,13 @@ export class SearchService {
     return this.photoRepository.find({
       where: [
         { caption: Like(`%${escapedQuery}%`) },
-        { hashtags: Like(`%${escapedQuery}%`) },
+        {
+          hashtags: Raw(
+            (alias) =>
+              `EXISTS (SELECT 1 FROM unnest(${alias}) AS tag WHERE tag LIKE $1)`,
+            [`%${escapedQuery}%`],
+          ),
+        },
       ],
       relations: ['user'],
       order: { created_at: 'DESC' },

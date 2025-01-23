@@ -6,6 +6,7 @@ import {
   Notification,
 } from '../../domain/entities/notification.entity';
 import '@jest/globals';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 describe('NotificationController', () => {
   let controller: NotificationController;
@@ -110,7 +111,13 @@ describe('NotificationController', () => {
   });
 
   describe('getUserNotifications', () => {
-    const mockRequest = { user: { sub: '1' } };
+    const mockRequest = {
+      user: {
+        id: '1',
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should return user notifications', async () => {
       const result = await controller.getUserNotifications(mockRequest);
@@ -135,7 +142,13 @@ describe('NotificationController', () => {
   });
 
   describe('markAsRead', () => {
-    const mockRequest = { user: { sub: '1' } };
+    const mockRequest = {
+      user: {
+        id: '1',
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should mark notification as read', async () => {
       await controller.markAsRead(mockRequest, '1');
@@ -156,7 +169,13 @@ describe('NotificationController', () => {
   });
 
   describe('markAllAsRead', () => {
-    const mockRequest = { user: { sub: '1' } };
+    const mockRequest = {
+      user: {
+        id: '1',
+      },
+      headers: {},
+      body: {},
+    } as RequestWithUser;
 
     it('should mark all notifications as read', async () => {
       await controller.markAllAsRead(mockRequest);

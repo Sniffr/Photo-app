@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { UserService } from '../services/user.service';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
 import { UserProfileDto } from '../dtos/user-profile.dto';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 @ApiTags('users')
 @Controller('users')
@@ -44,20 +45,20 @@ export class UserController {
   @ApiOperation({ summary: 'Follow a user' })
   @ApiResponse({ status: 201, description: 'Successfully followed user' })
   async followUser(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Param('username') username: string,
   ): Promise<void> {
-    await this.userService.followUser(req.user.sub, username);
+    await this.userService.followUser(req.user.id, username);
   }
 
   @Delete('unfollow/:username')
   @ApiOperation({ summary: 'Unfollow a user' })
   @ApiResponse({ status: 200, description: 'Successfully unfollowed user' })
   async unfollowUser(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Param('username') username: string,
   ): Promise<void> {
-    await this.userService.unfollowUser(req.user.sub, username);
+    await this.userService.unfollowUser(req.user.id, username);
   }
 
   @Put('profile')
@@ -68,9 +69,9 @@ export class UserController {
     type: UserProfileDto,
   })
   async updateProfile(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Body() updateProfileDto: UpdateProfileDto,
   ): Promise<UserProfileDto> {
-    return this.userService.updateProfile(req.user.sub, updateProfileDto);
+    return this.userService.updateProfile(req.user.id, updateProfileDto);
   }
 }

@@ -18,6 +18,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { LikeService } from '../services/like.service';
 import { CreateLikeDto } from '../dtos/create-like.dto';
 import { LikeResponseDto } from '../dtos/like-response.dto';
+import { RequestWithUser } from '../../auth/interfaces/UserRequest';
 
 @ApiTags('likes')
 @Controller('likes')
@@ -34,20 +35,20 @@ export class LikeController {
     type: LikeResponseDto,
   })
   async create(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Body() createLikeDto: CreateLikeDto,
   ) {
-    return this.likeService.create(req.user.sub, createLikeDto);
+    return this.likeService.create(req.user.id, createLikeDto);
   }
 
   @Delete(':photoId')
   @ApiOperation({ summary: 'Unlike a photo' })
   @ApiResponse({ status: 200, description: 'Photo unliked successfully' })
   async remove(
-    @Request() req: { user: { sub: string } },
+    @Request() req: RequestWithUser,
     @Param('photoId') photoId: string,
   ) {
-    return this.likeService.remove(req.user.sub, photoId);
+    return this.likeService.remove(req.user.id, photoId);
   }
 
   @Get('photo/:photoId')
