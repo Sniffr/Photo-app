@@ -95,9 +95,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /app
-            docker-compose pull
+            docker compose pull
             AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} \
             AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} \
             AWS_REGION=${{ secrets.AWS_REGION }} \
             AWS_S3_BUCKET=${{ secrets.AWS_S3_BUCKET }} \
-            docker-compose up -d
+            docker compose up -d
