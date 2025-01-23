@@ -2,20 +2,21 @@ FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
+# Copy package files
 COPY package*.json ./
 COPY tsconfig.json ./
 
-RUN npm install --production=false
+# Install dependencies
+RUN npm install
 
+# Copy source code
 COPY . .
 
-# Debug steps
-RUN ls -la
+# Build the application
 RUN npm run build
-RUN ls -la dist
 
+# Expose the port the app runs on
 EXPOSE 3000
 
-RUN npm prune --production
-
+# Command to run the application
 CMD ["npm", "run", "start:prod"]
