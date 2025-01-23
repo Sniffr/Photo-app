@@ -51,7 +51,7 @@ export class UserService {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new Error(error.message);
+      throw new Error(error instanceof Error ? error.message : 'Unknown error');
     }
   }
 
