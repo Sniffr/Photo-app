@@ -108,7 +108,6 @@ describe('StorageService', () => {
         Key: expect.any(String) as string,
         Body: mockFile.buffer,
         ContentType: mockFile.mimetype,
-        ACL: 'public-read',
       });
     });
 
