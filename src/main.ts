@@ -4,7 +4,6 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as dotenv from 'dotenv';
 
-
 dotenv.config();
 
 async function bootstrap() {
@@ -15,11 +14,11 @@ async function bootstrap() {
 
   // Configure Swagger documentation
   const config = new DocumentBuilder()
-      .setTitle('Photo-Inc API')
-      .setDescription('Photo sharing application API documentation')
-      .setVersion('1.0')
-      .addBearerAuth()
-      .build();
+    .setTitle('Photo-Inc API')
+    .setDescription('Photo sharing application API documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 

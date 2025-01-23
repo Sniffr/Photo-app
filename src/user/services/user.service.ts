@@ -23,29 +23,36 @@ export class UserService {
   ) {}
 
   async getProfile(username: string): Promise<UserProfileDto> {
-    const user = await this.userRepository.findOne({
-      where: { username },
-    });
+    try {
+      const user = await this.userRepository.findOne({
+        where: { username },
+      });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const [followersCount, followingCount, photosCount] = await Promise.all([
+        this.followRepository.count({ where: { following_id: user.id } }),
+        this.followRepository.count({ where: { follower_id: user.id } }),
+        this.photoRepository.count({ where: { user_id: user.id } }),
+      ]);
+
+      return {
+        id: user.id,
+        username: user.username,
+        bio: user.bio,
+        followersCount,
+        followingCount,
+        photosCount,
+        createdAt: user.created_at,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new Error(error.message);
     }
-
-    const [followersCount, followingCount, photosCount] = await Promise.all([
-      this.followRepository.count({ where: { following_id: user.id } }),
-      this.followRepository.count({ where: { follower_id: user.id } }),
-      this.photoRepository.count({ where: { user_id: user.id } }),
-    ]);
-
-    return {
-      id: user.id,
-      username: user.username,
-      bio: user.bio,
-      followersCount,
-      followingCount,
-      photosCount,
-      createdAt: user.created_at,
-    };
   }
 
   async followUser(followerId: string, username: string): Promise<void> {

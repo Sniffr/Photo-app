@@ -24,6 +24,10 @@ export class SearchController {
   async search(
     @Query() searchQueryDto: SearchQueryDto,
   ): Promise<{ users?: User[]; photos?: Photo[] }> {
-    return this.searchService.search(searchQueryDto);
+    const result = await this.searchService.search(searchQueryDto);
+    return {
+      users: searchQueryDto.username !== undefined ? result?.users : undefined,
+      photos: searchQueryDto.hashtag !== undefined ? result?.photos : undefined
+    };
   }
 }

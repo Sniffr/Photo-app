@@ -1,4 +1,11 @@
-import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+  Request,
+  BadRequestException,
+} from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -29,6 +36,9 @@ export class FeedController {
     @Request() req: { user: { sub: string } },
     @Query() query: FeedQueryDto,
   ) {
+    if (!req?.user?.sub) {
+      throw new BadRequestException('Invalid user data');
+    }
     return this.feedService.getFeed(req.user.sub, query);
   }
 }

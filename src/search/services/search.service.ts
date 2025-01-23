@@ -14,20 +14,28 @@ export class SearchService {
     private readonly photoRepository: Repository<Photo>,
   ) {}
 
+  private escapeSpecialChars(query: string): string {
+    return query.replace(/[%_]/g, '\\\\$&');
+  }
+
   async searchUsers(query: string): Promise<User[]> {
+    if (!query) return [];
+    const escapedQuery = this.escapeSpecialChars(query);
     return this.userRepository.find({
       where: {
-        username: Like(`%${query}%`),
+        username: Like(`%${escapedQuery}%`),
       },
       select: ['id', 'username', 'bio', 'created_at'],
     });
   }
 
   async searchPhotos(query: string): Promise<Photo[]> {
+    if (!query) return [];
+    const escapedQuery = this.escapeSpecialChars(query);
     return this.photoRepository.find({
       where: [
-        { caption: Like(`%${query}%`) },
-        { hashtags: Like(`%${query}%`) },
+        { caption: Like(`%${escapedQuery}%`) },
+        { hashtags: Like(`%${escapedQuery}%`) },
       ],
       relations: ['user'],
       order: { created_at: 'DESC' },
@@ -35,23 +43,21 @@ export class SearchService {
   }
 
   async search(searchQueryDto: SearchQueryDto): Promise<{
-    users?: User[];
-    photos?: Photo[];
+    users: User[];
+    photos: Photo[];
   }> {
     const { username, hashtag } = searchQueryDto;
-    const results = {
-      users: undefined as User[] | undefined,
-      photos: undefined as Photo[] | undefined,
-    };
 
-    if (username) {
-      results.users = await this.searchUsers(username);
+    // Handle empty/null/undefined parameters
+    if (!username && !hashtag) {
+      return { users: [], photos: [] };
     }
 
-    if (hashtag) {
-      results.photos = await this.searchPhotos(hashtag);
-    }
+    const [users, photos]: [User[], Photo[]] = await Promise.all([
+      username ? this.searchUsers(username) : Promise.resolve<User[]>([]),
+      hashtag ? this.searchPhotos(hashtag) : Promise.resolve<Photo[]>([]),
+    ]);
 
-    return results;
+    return { users, photos };
   }
 }

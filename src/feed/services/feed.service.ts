@@ -15,8 +15,8 @@ export class FeedService {
   ) {}
 
   async getFeed(userId: string, query: FeedQueryDto) {
-    const page = query.page || 1;
-    const limit = query.limit || 10;
+    const page = Math.max(1, query.page || 1);
+    const limit = Math.min(Math.max(10, query.limit || 10), 100);
     const skip = (page - 1) * limit;
 
     // Get IDs of users being followed
