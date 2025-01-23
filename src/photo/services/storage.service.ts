@@ -53,7 +53,6 @@ export class StorageService {
       Key: key,
       Body: file.buffer,
       ContentType: file.mimetype,
-      ACL: 'public-read',
     };
 
     const uploadResult = await this.s3.upload(params).promise();
