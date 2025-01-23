@@ -27,7 +27,7 @@ export class SearchController {
     const result = await this.searchService.search(searchQueryDto);
     return {
       users: searchQueryDto.username !== undefined ? result?.users : undefined,
-      photos: searchQueryDto.hashtag !== undefined ? result?.photos : undefined
+      photos: searchQueryDto.hashtag !== undefined ? result?.photos : undefined,
     };
   }
 }
