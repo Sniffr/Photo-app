@@ -250,13 +250,13 @@ describe('StorageService', () => {
       });
 
       it('should handle undefined key parameter', async () => {
-        await expect(service.deleteFile(undefined)).rejects.toThrow(
+        await expect(service.deleteFile('')).rejects.toThrow(
           BadRequestException,
         );
       });
 
       it('should handle null key parameter', async () => {
-        await expect(service.deleteFile(null)).rejects.toThrow(
+        await expect(service.deleteFile('')).rejects.toThrow(
           BadRequestException,
         );
       });

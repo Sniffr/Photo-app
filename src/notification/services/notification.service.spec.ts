@@ -5,12 +5,101 @@ import {
   Notification,
   NotificationType,
 } from '../../domain/entities/notification.entity';
-import { Repository } from 'typeorm';
+import { Repository, ObjectLiteral, EntityMetadata, EntityTarget } from 'typeorm';
 
-import { ObjectLiteral } from 'typeorm';
+const createEntityMetadata = (entity: any): EntityMetadata => ({
+  "@instanceof": Symbol.for("EntityMetadata"),
+  connection: {} as any,
+  subscribers: [],
+  target: entity,
+  tableMetadataArgs: {} as any,
+  table: {} as any,
+  columns: [],
+  relations: [],
+  relationIds: [],
+  relationCounts: [],
+  indices: [],
+  uniques: [],
+  checks: [],
+  exclusions: [],
+  embeddeds: [],
+  foreignKeys: [],
+  propertiesMap: {},
+  closureJunctionTable: {} as any,
+  name: entity.name.toLowerCase(),
+  tableName: entity.name.toLowerCase(),
+  tablePath: entity.name.toLowerCase(),
+  schemaPath: "public",
+  orderBy: {},
+  discriminatorValue: entity.name.toLowerCase(),
+  childEntityMetadatas: [],
+  ownColumns: [],
+  ownRelations: [],
+  ownIndices: [],
+  ownUniques: [],
+  ownChecks: [],
+  ownExclusions: [],
+  isClosure: false,
+  isJunction: false,
+  isAlwaysUsingConstructor: true,
+  isJunctionEntityMetadata: false,
+  isClosureJunctionEntityMetadata: false,
+  tableType: "regular",
+  expression: undefined,
+  dependsOn: {},
+  relationWithParentMetadata: undefined,
+  relationMetadatas: [],
+  inheritanceTree: [],
+  inheritancePattern: undefined,
+  treeType: undefined,
+  treeOptions: undefined,
+  targetName: entity.name,
+  givenTableName: entity.name.toLowerCase(),
+  fileType: "entity",
+  engine: undefined,
+  database: undefined,
+  schema: undefined,
+  synchronize: true,
+  withoutRowid: false,
+  createDateColumn: undefined,
+  updateDateColumn: undefined,
+  deleteDateColumn: undefined,
+  versionColumn: undefined,
+  discriminatorColumn: undefined,
+  treeLevelColumn: undefined,
+  nestedSetLeftColumn: undefined,
+  nestedSetRightColumn: undefined,
+  materializedPathColumn: undefined,
+  objectIdColumn: undefined,
+  parentClosureEntityMetadata: undefined,
+  parentEntityMetadata: undefined,
+  tableNameWithoutPrefix: entity.name.toLowerCase(),
+} as unknown as EntityMetadata);
+
+type MockType<T> = {
+  [P in keyof T]: P extends 'metadata' | 'manager' | 'target' ? T[P] : jest.Mock;
+};
 
 type MockRepository<T extends ObjectLiteral> = {
-  [P in keyof Repository<T>]?: jest.Mock<any, any>;
+  [P in keyof Repository<T>]: P extends 'metadata'
+    ? EntityMetadata
+    : P extends 'manager'
+    ? Repository<T>['manager']
+    : P extends 'target'
+    ? EntityTarget<T>
+    : jest.Mock;
+} & {
+  softRemove: jest.Mock;
+  restore: jest.Mock;
+  exists: jest.Mock;
+  existsBy: jest.Mock;
+  sum: jest.Mock;
+  average: jest.Mock;
+  minimum: jest.Mock;
+  maximum: jest.Mock;
+  findOneOrFail: jest.Mock;
+  findOneByOrFail: jest.Mock;
+  queryRunner?: jest.Mock;
 };
 
 describe('NotificationService', () => {
@@ -100,6 +189,46 @@ describe('NotificationService', () => {
     delete: jest
       .fn()
       .mockImplementation(() => Promise.resolve({ affected: 1 })),
+    findOne: jest.fn(),
+    remove: jest.fn(),
+    count: jest.fn(),
+    findAndCount: jest.fn(),
+    preload: jest.fn(),
+    merge: jest.fn(),
+    softDelete: jest.fn(),
+    recover: jest.fn(),
+    createQueryBuilder: jest.fn(),
+    query: jest.fn(),
+    clear: jest.fn(),
+    increment: jest.fn(),
+    decrement: jest.fn(),
+    exist: jest.fn(),
+    metadata: createEntityMetadata(Notification),
+    manager: {} as any,
+    hasId: jest.fn(),
+    getId: jest.fn(),
+    target: jest.fn().mockReturnValue(Notification),
+    upsert: jest.fn(),
+    insert: jest.fn(),
+    extend: jest.fn(),
+
+    findOneBy: jest.fn(),
+    findOneById: jest.fn(),
+    findByIds: jest.fn(),
+    findAndCountBy: jest.fn(),
+    countBy: jest.fn(),
+    findBy: jest.fn(),
+    softRemove: jest.fn(),
+    restore: jest.fn(),
+    exists: jest.fn(),
+    existsBy: jest.fn(),
+    sum: jest.fn(),
+    average: jest.fn(),
+    minimum: jest.fn(),
+    maximum: jest.fn(),
+    findOneOrFail: jest.fn(),
+    findOneByOrFail: jest.fn(),
+    queryRunner: jest.fn()
   };
 
   beforeEach(async () => {

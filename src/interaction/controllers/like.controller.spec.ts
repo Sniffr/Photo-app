@@ -16,7 +16,7 @@ describe('LikeController', () => {
     email: 'test@example.com',
     username: 'testuser',
     password: 'hashedpassword',
-    bio: null,
+    bio: '', // Empty string since TypeScript is not properly handling nullable bio
     created_at: new Date(),
     updated_at: new Date(),
   };

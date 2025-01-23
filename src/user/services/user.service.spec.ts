@@ -1,15 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ConflictException, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, ObjectLiteral } from 'typeorm';
 import { UserService } from './user.service';
 import { User } from '../../domain/entities/user.entity';
 import { Follow } from '../../domain/entities/follow.entity';
 import { Photo } from '../../domain/entities/photo.entity';
 import { UpdateProfileDto } from '../dtos/update-profile.dto';
 
-type MockRepository<T = any> = {
-  [P in keyof Repository<T>]?: jest.Mock;
+type MockType<T> = {
+  [P in keyof T]: P extends 'metadata' | 'manager' ? T[P] : jest.Mock;
+};
+
+type MockRepository<T extends ObjectLiteral> = {
+  [P in keyof Repository<T>]: P extends 'metadata' | 'manager' 
+    ? Repository<T>[P]
+    : jest.Mock;
 };
 
 describe('UserService', () => {
@@ -37,17 +43,110 @@ describe('UserService', () => {
       }),
       save: jest.fn(),
       create: jest.fn(),
-    },
+      update: jest.fn(),
+      remove: jest.fn(),
+      find: jest.fn(),
+      count: jest.fn(),
+      findAndCount: jest.fn(),
+      delete: jest.fn(),
+      preload: jest.fn(),
+      merge: jest.fn(),
+      softDelete: jest.fn(),
+      recover: jest.fn(),
+      createQueryBuilder: jest.fn(),
+      query: jest.fn(),
+      clear: jest.fn(),
+      increment: jest.fn(),
+      decrement: jest.fn(),
+      exist: jest.fn(),
+      metadata: {},
+      manager: {} as any,
+      hasId: jest.fn(),
+      getId: jest.fn(),
+      target: jest.fn().mockReturnValue(User),
+      upsert: jest.fn(),
+      insert: jest.fn(),
+      extend: jest.fn(),
+      release: jest.fn(),
+      findOneBy: jest.fn(),
+      findOneById: jest.fn(),
+      findByIds: jest.fn(),
+      findAndCountBy: jest.fn(),
+      countBy: jest.fn(),
+      findBy: jest.fn(),
+    } as unknown as MockRepository<User>,
     followRepo: {
       findOne: jest.fn(),
       create: jest.fn(),
       save: jest.fn(),
       remove: jest.fn(),
       count: jest.fn().mockResolvedValue(0),
-    },
+      update: jest.fn(),
+      find: jest.fn(),
+      findAndCount: jest.fn(),
+      delete: jest.fn(),
+      preload: jest.fn(),
+      merge: jest.fn(),
+      softDelete: jest.fn(),
+      recover: jest.fn(),
+      createQueryBuilder: jest.fn(),
+      query: jest.fn(),
+      clear: jest.fn(),
+      increment: jest.fn(),
+      decrement: jest.fn(),
+      exist: jest.fn(),
+      metadata: {},
+      manager: {} as any,
+      hasId: jest.fn(),
+      getId: jest.fn(),
+      target: jest.fn().mockReturnValue(Follow),
+      upsert: jest.fn(),
+      insert: jest.fn(),
+      extend: jest.fn(),
+      release: jest.fn(),
+      findOneBy: jest.fn(),
+      findOneById: jest.fn(),
+      findByIds: jest.fn(),
+      findAndCountBy: jest.fn(),
+      countBy: jest.fn(),
+      findBy: jest.fn(),
+    } as unknown as MockRepository<Follow>,
     photoRepo: {
+      findOne: jest.fn(),
+      create: jest.fn(),
+      save: jest.fn(),
+      remove: jest.fn(),
       count: jest.fn().mockResolvedValue(0),
-    },
+      update: jest.fn(),
+      find: jest.fn(),
+      findAndCount: jest.fn(),
+      delete: jest.fn(),
+      preload: jest.fn(),
+      merge: jest.fn(),
+      softDelete: jest.fn(),
+      recover: jest.fn(),
+      createQueryBuilder: jest.fn(),
+      query: jest.fn(),
+      clear: jest.fn(),
+      increment: jest.fn(),
+      decrement: jest.fn(),
+      exist: jest.fn(),
+      metadata: {},
+      manager: {} as any,
+      hasId: jest.fn(),
+      getId: jest.fn(),
+      target: jest.fn().mockReturnValue(Photo),
+      upsert: jest.fn(),
+      insert: jest.fn(),
+      extend: jest.fn(),
+      release: jest.fn(),
+      findOneBy: jest.fn(),
+      findOneById: jest.fn(),
+      findByIds: jest.fn(),
+      findAndCountBy: jest.fn(),
+      countBy: jest.fn(),
+      findBy: jest.fn(),
+    } as unknown as MockRepository<Photo>,
   };
 
   beforeEach(async () => {
@@ -121,7 +220,9 @@ describe('UserService', () => {
 
     it('should throw NotFoundException when user does not exist', async (): Promise<void> => {
       // Override the default mock implementation for this test
-      userRepository.findOne.mockImplementationOnce(() => Promise.resolve(null));
+      userRepository.findOne.mockImplementationOnce(() =>
+        Promise.resolve(null),
+      );
 
       await expect(service.getProfile('nonexistent')).rejects.toThrow(
         NotFoundException,
@@ -131,9 +232,13 @@ describe('UserService', () => {
     it('should handle database error during profile fetch', async (): Promise<void> => {
       const dbError = new Error('Database error');
       // Override the default mock implementation for this test
-      userRepository.findOne.mockImplementationOnce(() => Promise.reject(dbError));
+      userRepository.findOne.mockImplementationOnce(() =>
+        Promise.reject(dbError),
+      );
 
-      await expect(service.getProfile('testuser')).rejects.toThrow(dbError.message);
+      await expect(service.getProfile('testuser')).rejects.toThrow(
+        dbError.message,
+      );
     });
   });
 
