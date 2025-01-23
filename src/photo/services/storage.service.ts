@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as AWS from 'aws-sdk';
 import { UploadResult } from '../interfaces/storage-config.interface';
-import { ConfigModule } from '@nestjs/config';
 
 @Injectable()
 export class StorageService {

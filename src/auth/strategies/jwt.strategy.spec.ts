@@ -155,11 +155,10 @@ describe('JwtStrategy', () => {
 
       // Create a new instance to verify constructor behavior
       const getSpy = jest.spyOn(mockConfigService, 'get');
-      const strategy = new JwtStrategy(
+      new JwtStrategy(
         mockConfigService as unknown as ConfigService,
         mockUserRepository,
       );
-
       expect(getSpy).toHaveBeenCalledWith('JWT_SECRET');
       expect(getSpy).toHaveReturnedWith('test-jwt-secret');
       getSpy.mockRestore();
