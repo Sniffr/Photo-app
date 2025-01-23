@@ -1,99 +1,213 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Photo-Inc API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A robust photo-sharing application backend built with NestJS, PostgreSQL, and AWS S3.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- User authentication with JWT
+- Photo upload and management with AWS S3 storage
+- User profiles and follow system
+- Feed generation with pagination
+- Like and comment functionality
+- Search capabilities for users and photos
+- Real-time notifications
+- Comprehensive API documentation with Swagger
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Local Development Setup
 
-## Project setup
+### Prerequisites
 
+- Node.js 18 or later
+- PostgreSQL 14 or later
+- AWS S3 bucket and credentials
+- Docker (optional, for containerized setup)
+
+### Environment Setup
+
+1. Clone the repository:
 ```bash
-$ npm install
+git clone https://github.com/Sniffr/Photo-Inc.git
+cd Photo-Inc
 ```
 
-## Compile and run the project
-
+2. Copy the example environment file and update with your credentials:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+3. Update the following environment variables in `.env`:
+```
+# Authentication
+JWT_SECRET=your-jwt-secret-here
 
-```bash
-# unit tests
-$ npm run test
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=photo_inc
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+# AWS S3
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+AWS_REGION=your-region
+AWS_S3_BUCKET=your-bucket-name
 ```
 
-## Deployment
+### Database Setup
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+1. Create a PostgreSQL database:
 ```bash
-$ npm install -g mau
-$ mau deploy
+createdb photo_inc
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+2. Install dependencies and run migrations:
+```bash
+npm install
+npm run migration:run
+```
 
-## Resources
+### Running the Application
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+# Development mode
+npm run start:dev
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Production mode
+npm run build
+npm run start:prod
+```
 
-## Support
+The API will be available at `http://localhost:3000`. Swagger documentation can be accessed at `http://localhost:3000/api`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Deployment Guide
 
-## Stay in touch
+### Prerequisites for Private Server
+- Ubuntu 20.04 LTS or later
+- Docker and Docker Compose installed
+- Node.js 18 or later (for running migrations)
+- PostgreSQL 14 or later
+- Nginx (for reverse proxy)
+- SSL certificate (recommended)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Server Setup
+
+1. Install required packages:
+```bash
+sudo apt update
+sudo apt install -y docker.io docker-compose nginx certbot python3-certbot-nginx
+```
+
+2. Create deployment directory:
+```bash
+sudo mkdir -p /opt/photo-inc
+sudo chown $USER:$USER /opt/photo-inc
+cd /opt/photo-inc
+```
+
+3. Clone the repository:
+```bash
+git clone https://github.com/Sniffr/Photo-Inc.git .
+```
+
+### Docker Setup
+
+1. Create environment file:
+```bash
+cp .env.example .env
+# Edit .env with your production values
+```
+
+2. Build and start the containers:
+```bash
+docker-compose up -d
+```
+
+3. Run database migrations:
+```bash
+docker-compose exec app npm run migration:run
+```
+
+### Nginx Configuration
+
+1. Create Nginx configuration:
+```bash
+sudo nano /etc/nginx/sites-available/photo-inc
+```
+
+Add the following configuration:
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+2. Enable the site and restart Nginx:
+```bash
+sudo ln -s /etc/nginx/sites-available/photo-inc /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+3. Set up SSL (recommended):
+```bash
+sudo certbot --nginx -d your-domain.com
+```
+
+## CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment. The pipeline consists of the following stages:
+
+### Test Stage
+- Runs on every push and pull request
+- Sets up Node.js and PostgreSQL
+- Installs dependencies
+- Runs linting checks
+- Executes unit tests
+- Environment variables are automatically configured
+
+### Build Stage
+- Triggered on push to main branch
+- Uses Docker Buildx for multi-platform builds
+- Builds and pushes Docker image to registry
+- Requires Docker Hub credentials
+
+### Deploy Stage
+- Deploys to private server using SSH
+- Automatically runs database migrations
+- Sets up environment variables from secrets
+- Configures SSL and domain settings
+
+### Environment Variables for CI/CD
+Required secrets for the pipeline:
+- `DOCKER_USERNAME`: Docker Hub username
+- `DOCKER_PASSWORD`: Docker Hub password
+- `DEPLOY_HOST`: Deployment server hostname
+- `DEPLOY_USERNAME`: Deployment server username
+- `DEPLOY_SSH_KEY`: SSH private key for deployment
+- `JWT_SECRET`: JWT signing secret
+- `AWS_ACCESS_KEY_ID`: AWS access key
+- `AWS_SECRET_ACCESS_KEY`: AWS secret key
+- `AWS_REGION`: AWS region
+- `AWS_S3_BUCKET`: S3 bucket name
+
+## API Documentation
+
+The API documentation is available in two formats:
+
+1. Swagger UI: Available at `/api` when running the application
+2. Postman Collection: Located in the `postman` directory
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is MIT licensed.

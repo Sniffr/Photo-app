@@ -1,0 +1,566 @@
+{
+  "info": {
+    "name": "Photo-Inc API",
+    "description": "API collection for Photo-Inc photo sharing application",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "User authentication endpoints",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Register a new user"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"johndoe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "description": "Login with email and password"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout user (invalidates token)"
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": []
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "body": "{\n  \"message\": \"Successfully logged out\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Photos",
+      "description": "Photo management endpoints",
+      "item": [
+        {
+          "name": "Upload Photo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/photos",
+              "host": ["{{base_url}}"],
+              "path": ["photos"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "caption",
+                  "value": "Beautiful sunset",
+                  "type": "text"
+                },
+                {
+                  "key": "hashtags",
+                  "value": "[\"sunset\", \"nature\"]",
+                  "type": "text"
+                }
+              ]
+            },
+            "description": "Upload a new photo"
+          }
+        },
+        {
+          "name": "Get User Photos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/photos",
+              "host": ["{{base_url}}"],
+              "path": ["photos"]
+            },
+            "description": "Get all photos for authenticated user"
+          }
+        },
+        {
+          "name": "Delete Photo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/photos/:id",
+              "host": ["{{base_url}}"],
+              "path": ["photos", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "photo-id"
+                }
+              ]
+            },
+            "description": "Delete a photo by ID"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Feed",
+      "description": "Feed management endpoints",
+      "item": [
+        {
+          "name": "Get Feed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/feed?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["feed"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get user's feed with pagination"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Likes",
+      "description": "Like management endpoints",
+      "item": [
+        {
+          "name": "Like Photo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/likes",
+              "host": ["{{base_url}}"],
+              "path": ["likes"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"photoId\": \"photo-id\"\n}"
+            },
+            "description": "Like a photo"
+          }
+        },
+        {
+          "name": "Unlike Photo",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/likes/:photoId",
+              "host": ["{{base_url}}"],
+              "path": ["likes", ":photoId"],
+              "variable": [
+                {
+                  "key": "photoId",
+                  "value": "photo-id"
+                }
+              ]
+            },
+            "description": "Unlike a photo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "description": "Comment management endpoints",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/comments/photo/:photoId",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "photo", ":photoId"],
+              "variable": [
+                {
+                  "key": "photoId",
+                  "value": "photo-id"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Great photo!\"\n}"
+            },
+            "description": "Add a comment to a photo"
+          }
+        },
+        {
+          "name": "Get Photo Comments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/comments/photo/:photoId",
+              "host": ["{{base_url}}"],
+              "path": ["comments", "photo", ":photoId"],
+              "variable": [
+                {
+                  "key": "photoId",
+                  "value": "photo-id"
+                }
+              ]
+            },
+            "description": "Get comments for a photo"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "description": "User profile management endpoints",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/:username",
+              "host": ["{{base_url}}"],
+              "path": ["users", ":username"],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "johndoe"
+                }
+              ]
+            },
+            "description": "Get user profile"
+          }
+        },
+        {
+          "name": "Follow User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/follow/:username",
+              "host": ["{{base_url}}"],
+              "path": ["users", "follow", ":username"],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "janedoe"
+                }
+              ]
+            },
+            "description": "Follow a user"
+          }
+        },
+        {
+          "name": "Unfollow User",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/unfollow/:username",
+              "host": ["{{base_url}}"],
+              "path": ["users", "unfollow", ":username"],
+              "variable": [
+                {
+                  "key": "username",
+                  "value": "janedoe"
+                }
+              ]
+            },
+            "description": "Unfollow a user"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/users/profile",
+              "host": ["{{base_url}}"],
+              "path": ["users", "profile"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"johndoe_updated\",\n  \"bio\": \"Photography enthusiast\"\n}"
+            },
+            "description": "Update user profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "description": "Search endpoints",
+      "item": [
+        {
+          "name": "Search Users and Photos",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/search?username=john&hashtag=sunset",
+              "host": ["{{base_url}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "username",
+                  "value": "john"
+                },
+                {
+                  "key": "hashtag",
+                  "value": "sunset"
+                }
+              ]
+            },
+            "description": "Search for users and photos"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "description": "Notification management endpoints",
+      "item": [
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications",
+              "host": ["{{base_url}}"],
+              "path": ["notifications"]
+            },
+            "description": "Get user notifications"
+          }
+        },
+        {
+          "name": "Mark Notification as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/:id/read",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", ":id", "read"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "notification-id"
+                }
+              ]
+            },
+            "description": "Mark a notification as read"
+          }
+        },
+        {
+          "name": "Mark All Notifications as Read",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/notifications/read-all",
+              "host": ["{{base_url}}"],
+              "path": ["notifications", "read-all"]
+            },
+            "description": "Mark all notifications as read"
+          }
+        }
+      ]
+    }
+  ]
+}

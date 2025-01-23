@@ -22,8 +22,7 @@ The system follows a modular, layered architecture based on the following princi
 - Database: PostgreSQL
 - ORM: TypeORM
 - Authentication: JWT
-- File Storage: MinIO (S3-compatible)
-- Cache: Redis
+- File Storage: AWS (S3-compatible)
 - Container: Docker
 - CI/CD: GitHub Actions
 - API Documentation: Swagger/OpenAPI
@@ -86,19 +85,17 @@ Notification
 - Handles user authentication and authorization
 - JWT token generation and validation
 - Password encryption using bcrypt
-- Rate limiting for security
 
 ### 3.2 User Module
 - User profile management
 - Follow/unfollow functionality
-- User search
 - Profile updates
 
 ### 3.3 Photo Module
 - Photo upload and management
 - File validation and processing
 - Metadata storage
-- MinIO integration for storage
+- AWS integration for storage
 
 ### 3.4 Feed Module
 - Aggregates photos from followed users
@@ -113,7 +110,6 @@ Notification
 ### 3.6 Search Module
 - User search by username
 - Photo search by hashtags
-- Elasticsearch integration for efficient search
 
 ## 4. API Design
 
@@ -174,7 +170,7 @@ PUT /notifications/:id/read
 
 ## 6. Performance Optimization
 
-### 6.1 Caching Strategy
+### 6.1 Caching Strategy(TBD)
 - Redis for caching
 - Cache feed data
 - Cache user profiles
@@ -196,13 +192,8 @@ services:
     depends_on:
       - postgres
       - redis
-      - minio
   postgres:
     image: postgres:latest
-  redis:
-    image: redis:latest
-  minio:
-    image: minio/minio
 ```
 
 ### 7.2 CI/CD Pipeline
@@ -210,8 +201,7 @@ services:
 2. Build Docker image
 3. Run integration tests
 4. Deploy to staging
-5. Run E2E tests
-6. Deploy to production
+5. Deploy to production
 
 ## 8. Monitoring and Logging
 
