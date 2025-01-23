@@ -5,89 +5,94 @@ import { LikeService } from './like.service';
 import { Like } from '../../domain/entities/like.entity';
 import { Photo } from '../../domain/entities/photo.entity';
 import { CreateLikeDto } from '../dtos/create-like.dto';
-import { Repository, ObjectLiteral, EntityMetadata, EntityTarget } from 'typeorm';
+import {
+  Repository,
+  ObjectLiteral,
+  EntityMetadata,
+  EntityTarget,
+} from 'typeorm';
 
-const createEntityMetadata = (entity: any): EntityMetadata => ({
-  "@instanceof": Symbol.for("EntityMetadata"),
-  connection: {} as any,
-  subscribers: [],
-  target: entity,
-  tableMetadataArgs: {} as any,
-  table: {} as any,
-  columns: [],
-  relations: [],
-  relationIds: [],
-  relationCounts: [],
-  indices: [],
-  uniques: [],
-  checks: [],
-  exclusions: [],
-  embeddeds: [],
-  foreignKeys: [],
-  propertiesMap: {},
-  closureJunctionTable: {} as any,
-  name: entity.name.toLowerCase(),
-  tableName: entity.name.toLowerCase(),
-  tablePath: entity.name.toLowerCase(),
-  schemaPath: "public",
-  orderBy: {},
-  discriminatorValue: entity.name.toLowerCase(),
-  childEntityMetadatas: [],
-  ownColumns: [],
-  ownRelations: [],
-  ownIndices: [],
-  ownUniques: [],
-  ownChecks: [],
-  ownExclusions: [],
-  isClosure: false,
-  isJunction: false,
-  isAlwaysUsingConstructor: true,
-  isJunctionEntityMetadata: false,
-  isClosureJunctionEntityMetadata: false,
-  tableType: "regular",
-  expression: undefined,
-  dependsOn: {},
-  relationWithParentMetadata: undefined,
-  relationMetadatas: [],
-  inheritanceTree: [],
-  inheritancePattern: undefined,
-  treeType: undefined,
-  treeOptions: undefined,
-  targetName: entity.name,
-  givenTableName: entity.name.toLowerCase(),
-  fileType: "entity",
-  engine: undefined,
-  database: undefined,
-  schema: undefined,
-  synchronize: true,
-  withoutRowid: false,
-  createDateColumn: undefined,
-  updateDateColumn: undefined,
-  deleteDateColumn: undefined,
-  versionColumn: undefined,
-  discriminatorColumn: undefined,
-  treeLevelColumn: undefined,
-  nestedSetLeftColumn: undefined,
-  nestedSetRightColumn: undefined,
-  materializedPathColumn: undefined,
-  objectIdColumn: undefined,
-  parentClosureEntityMetadata: undefined,
-  parentEntityMetadata: undefined,
-  tableNameWithoutPrefix: entity.name.toLowerCase(),
-} as unknown as EntityMetadata);
+const createEntityMetadata = (
+  entity: new (...args: unknown[]) => Like | Photo,
+): EntityMetadata =>
+  ({
+    '@instanceof': Symbol.for('EntityMetadata'),
+    connection: {} as Repository<Like | Photo>['manager'],
+    subscribers: [],
+    target: entity,
+    tableMetadataArgs: {} as EntityMetadata['tableMetadataArgs'],
+    table: undefined,
+    columns: [],
+    relations: [],
+    relationIds: [],
+    relationCounts: [],
+    indices: [],
+    uniques: [],
+    checks: [],
+    exclusions: [],
+    embeddeds: [],
+    foreignKeys: [],
+    propertiesMap: {},
+    closureJunctionTable: {} as EntityMetadata['closureJunctionTable'],
+    name: entity.name.toLowerCase(),
+    tableName: entity.name.toLowerCase(),
+    tablePath: entity.name.toLowerCase(),
+    schemaPath: 'public',
+    orderBy: {},
+    discriminatorValue: entity.name.toLowerCase(),
+    childEntityMetadatas: [],
+    ownColumns: [],
+    ownRelations: [],
+    ownIndices: [],
+    ownUniques: [],
+    ownChecks: [],
+    ownExclusions: [],
+    isClosure: false,
+    isJunction: false,
+    isAlwaysUsingConstructor: true,
+    isJunctionEntityMetadata: false,
+    isClosureJunctionEntityMetadata: false,
+    tableType: 'regular',
+    expression: undefined,
+    dependsOn: {},
+    relationWithParentMetadata: undefined,
+    relationMetadatas: [],
+    inheritanceTree: [],
+    inheritancePattern: undefined,
+    treeType: undefined,
+    treeOptions: undefined,
+    targetName: entity.name,
+    givenTableName: entity.name.toLowerCase(),
+    fileType: 'entity',
+    engine: undefined,
+    database: undefined,
+    schema: undefined,
+    synchronize: true,
+    withoutRowid: false,
+    createDateColumn: undefined,
+    updateDateColumn: undefined,
+    deleteDateColumn: undefined,
+    versionColumn: undefined,
+    discriminatorColumn: undefined,
+    treeLevelColumn: undefined,
+    nestedSetLeftColumn: undefined,
+    nestedSetRightColumn: undefined,
+    materializedPathColumn: undefined,
+    objectIdColumn: undefined,
+    parentClosureEntityMetadata: undefined,
+    parentEntityMetadata: undefined,
+    tableNameWithoutPrefix: entity.name.toLowerCase(),
+  }) as unknown as EntityMetadata;
 
-type MockType<T> = {
-  [P in keyof T]: P extends 'metadata' | 'manager' | 'target' ? T[P] : jest.Mock;
-};
-
+// Type for repository methods
 type MockRepository<T extends ObjectLiteral> = {
   [P in keyof Repository<T>]: P extends 'metadata'
     ? EntityMetadata
     : P extends 'manager'
-    ? Repository<T>['manager']
-    : P extends 'target'
-    ? EntityTarget<T>
-    : jest.Mock;
+      ? Repository<T>['manager']
+      : P extends 'target'
+        ? EntityTarget<T>
+        : jest.Mock;
 } & {
   softRemove: jest.Mock;
   restore: jest.Mock;
@@ -142,7 +147,7 @@ describe('LikeService', () => {
       decrement: jest.fn(),
       exist: jest.fn(),
       metadata: createEntityMetadata(Like),
-      manager: {} as any,
+      manager: {} as Repository<Like>['manager'],
       hasId: jest.fn(),
       getId: jest.fn(),
       target: jest.fn().mockReturnValue(Like),
@@ -166,7 +171,7 @@ describe('LikeService', () => {
       maximum: jest.fn(),
       findOneOrFail: jest.fn(),
       findOneByOrFail: jest.fn(),
-      queryRunner: jest.fn()
+      queryRunner: jest.fn(),
     };
 
     const mockPhotoRepository: MockRepository<Photo> = {
@@ -189,7 +194,7 @@ describe('LikeService', () => {
       decrement: jest.fn(),
       exist: jest.fn(),
       metadata: createEntityMetadata(Photo),
-      manager: {} as any,
+      manager: {} as Repository<Photo>['manager'],
       hasId: jest.fn(),
       getId: jest.fn(),
       target: Photo,
@@ -213,7 +218,7 @@ describe('LikeService', () => {
       softRemove: jest.fn(),
       restore: jest.fn(),
       exists: jest.fn(),
-      existsBy: jest.fn()
+      existsBy: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({

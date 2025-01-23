@@ -5,17 +5,85 @@ import { PhotoService } from './photo.service';
 import { StorageService } from './storage.service';
 import { Photo } from '../../domain/entities/photo.entity';
 import { User } from '../../domain/entities/user.entity';
-import { Repository, ObjectLiteral } from 'typeorm';
+import { Repository, ObjectLiteral, EntityMetadata } from 'typeorm';
 import { CreatePhotoDto } from '../dtos/create-photo.dto';
 import * as sharp from 'sharp';
 
-// Define mock repository type that combines Repository and Jest mock methods
-type MockType<T> = {
-  [P in keyof T]: P extends 'metadata' | 'manager' ? T[P] : jest.Mock;
-};
+const createEntityMetadata = (
+  entity: new (...args: unknown[]) => Photo | User,
+): EntityMetadata =>
+  ({
+    '@instanceof': Symbol.for('EntityMetadata'),
+    connection: {} as Repository<Photo | User>['manager'],
+    subscribers: [],
+    target: entity,
+    tableMetadataArgs: {} as EntityMetadata['tableMetadataArgs'],
+    table: undefined,
+    columns: [],
+    relations: [],
+    relationIds: [],
+    relationCounts: [],
+    indices: [],
+    uniques: [],
+    checks: [],
+    exclusions: [],
+    embeddeds: [],
+    foreignKeys: [],
+    propertiesMap: {},
+    closureJunctionTable: {} as EntityMetadata['closureJunctionTable'],
+    name: entity.name.toLowerCase(),
+    tableName: entity.name.toLowerCase(),
+    tablePath: entity.name.toLowerCase(),
+    schemaPath: 'public',
+    orderBy: {},
+    discriminatorValue: entity.name.toLowerCase(),
+    childEntityMetadatas: [],
+    ownColumns: [],
+    ownRelations: [],
+    ownIndices: [],
+    ownUniques: [],
+    ownChecks: [],
+    ownExclusions: [],
+    isClosure: false,
+    isJunction: false,
+    isAlwaysUsingConstructor: true,
+    isJunctionEntityMetadata: false,
+    isClosureJunctionEntityMetadata: false,
+    tableType: 'regular',
+    expression: undefined,
+    dependsOn: {},
+    relationWithParentMetadata: undefined,
+    relationMetadatas: [],
+    inheritanceTree: [],
+    inheritancePattern: undefined,
+    treeType: undefined,
+    treeOptions: undefined,
+    targetName: entity.name,
+    givenTableName: entity.name.toLowerCase(),
+    fileType: 'entity',
+    engine: undefined,
+    database: undefined,
+    schema: undefined,
+    synchronize: true,
+    withoutRowid: false,
+    createDateColumn: undefined,
+    updateDateColumn: undefined,
+    deleteDateColumn: undefined,
+    versionColumn: undefined,
+    discriminatorColumn: undefined,
+    treeLevelColumn: undefined,
+    nestedSetLeftColumn: undefined,
+    nestedSetRightColumn: undefined,
+    materializedPathColumn: undefined,
+    objectIdColumn: undefined,
+    parentClosureEntityMetadata: undefined,
+    parentEntityMetadata: undefined,
+    tableNameWithoutPrefix: entity.name.toLowerCase(),
+  }) as unknown as EntityMetadata;
 
+// Define mock repository type
 type MockRepository<T extends ObjectLiteral> = {
-  [P in keyof Repository<T>]: P extends 'metadata' | 'manager' 
+  [P in keyof Repository<T>]: P extends 'metadata' | 'manager'
     ? Repository<T>[P]
     : jest.Mock;
 };
@@ -101,8 +169,8 @@ describe('PhotoService', () => {
     increment: jest.fn(),
     decrement: jest.fn(),
     exist: jest.fn(),
-    metadata: {},
-    manager: {} as any,
+    metadata: createEntityMetadata(Photo),
+    manager: {} as Repository<Photo>['manager'],
     hasId: jest.fn(),
     getId: jest.fn(),
     target: jest.fn().mockReturnValue(Photo),
@@ -140,8 +208,8 @@ describe('PhotoService', () => {
     increment: jest.fn(),
     decrement: jest.fn(),
     exist: jest.fn(),
-    metadata: {},
-    manager: {} as any,
+    metadata: createEntityMetadata(User),
+    manager: {} as Repository<User>['manager'],
     hasId: jest.fn(),
     getId: jest.fn(),
     target: jest.fn().mockReturnValue(User),
@@ -179,7 +247,7 @@ describe('PhotoService', () => {
     findAndCountBy: jest.fn(),
     countBy: jest.fn(),
     findBy: jest.fn(),
-  } as unknown as MockType<StorageService>;
+  } as unknown as Partial<StorageService>;
 
   const mockFile: Express.Multer.File = {
     fieldname: 'photo',
@@ -247,10 +315,22 @@ describe('PhotoService', () => {
     mockPhotoRepository.remove.mockImplementation((photo) =>
       Promise.resolve(photo),
     );
-    mockStorageService.uploadFile.mockImplementation(() =>
-      Promise.resolve({ url: mockPhoto.url }),
-    );
-    mockStorageService.deleteFile.mockImplementation(() => Promise.resolve());
+    const uploadFileMock = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({ url: mockPhoto.url }));
+    const deleteFileMock = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(undefined));
+    Object.defineProperty(mockStorageService, 'uploadFile', {
+      value: uploadFileMock,
+      configurable: true,
+      writable: true,
+    });
+    Object.defineProperty(mockStorageService, 'deleteFile', {
+      value: deleteFileMock,
+      configurable: true,
+      writable: true,
+    });
   });
 
   afterAll(() => {
@@ -322,7 +402,11 @@ describe('PhotoService', () => {
 
     it('should throw BadRequestException when no file is provided', async (): Promise<void> => {
       await expect(
-        service.create(mockUser, createPhotoDto, undefined as unknown as Express.Multer.File),
+        service.create(
+          mockUser,
+          createPhotoDto,
+          undefined as unknown as Express.Multer.File,
+        ),
       ).rejects.toThrow(BadRequestException);
     });
   });
@@ -410,12 +494,14 @@ describe('PhotoService', () => {
     });
 
     it('should handle storage service errors', async () => {
-      mockStorageService.deleteFile.mockRejectedValueOnce(
-        new Error('Storage error'),
-      );
+      const errorMessage = 'Storage error';
+      const mockStorageError = new Error(errorMessage);
+      jest
+        .spyOn(mockStorageService, 'deleteFile')
+        .mockRejectedValueOnce(mockStorageError);
 
       await expect(service.remove(mockUser.id, mockPhoto.id)).rejects.toThrow(
-        'Storage error',
+        errorMessage,
       );
     });
   });
