@@ -17,7 +17,7 @@ export class StorageService {
       'AWS_SECRET_ACCESS_KEY',
     );
     const region = this.configService.get<string>('AWS_REGION');
-    this.bucket = this.configService.get<string>('AWS_S3_BUCKET');
+    this.bucket = this.configService.get<string>('AWS_S3_BUCKET') || '';
 
     if (!accessKeyId || !secretAccessKey || !region || !this.bucket) {
       throw new Error('Missing AWS configuration');
