@@ -11,9 +11,9 @@ services:
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_USERNAME=postgres
-      - DB_PASSWORD=postgres
+      - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=photo_inc
-      - JWT_SECRET=your-jwt-secret-here
+      - JWT_SECRET=Dg6Axn^f%ks6S5hbdTPUqEVJ5NjU@dR
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
@@ -27,7 +27,7 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=photo_inc
     volumes:
       - postgres_data:/var/lib/postgresql/data
